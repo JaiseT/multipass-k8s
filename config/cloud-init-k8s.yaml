@@ -1,0 +1,33 @@
+# cloud config
+# -----------------------------------------------------------------------------------------------
+
+ssh_authorized_keys:
+  - ssh-rsa MYRSAPUBKEYGOESHERE
+
+package_update: true
+
+packages:
+ - curl
+ - jq
+
+write_files:
+  - content: |-
+      my dummy content
+
+    owner: ubuntu:ubuntu
+    path: /home/ubuntu/file.txt
+    permissions: '0644'
+
+bootcmd:
+  - echo $(whoami) > /root/boot.txt
+
+runcmd:
+  - sudo apt-get update
+  - sudo apt-get install docker.io -y
+  - sudo systemctl start docker
+  - sudo systemctl enable docker
+  - sudo usermod -aG docker $USER
+  - newgrp docker
+  - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+  - sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+  - sudo apt-get install kubeadm kubelet kubectl -y
